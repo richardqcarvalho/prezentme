@@ -6,16 +6,12 @@ import PageTwo from "@/components/pages/two";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { inputStore, pageStore } from "@/store";
-import { inputStoreT } from "@/types";
-import { JSX } from "react";
-
-type ElementT = JSX.Element & inputStoreT;
 
 export default function Home() {
   const { page, setPage } = pageStore();
   const inputs = inputStore();
   const pages = [PageOne, PageTwo, PageThree].map((Element) => (
-    <Element store={inputs} />
+    <Element key={Element.toString()} store={inputs} />
   ));
 
   return (
