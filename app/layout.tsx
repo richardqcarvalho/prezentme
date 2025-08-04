@@ -1,4 +1,4 @@
-import Providers from "@/app/providers";
+import QueryClientProvider from "@/app/providers/query-client";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body
         className={`${roboto.variable} flex h-svh w-svw items-center justify-center antialiased`}
       >
-        <Providers>{children}</Providers>
+        <QueryClientProvider>{children}</QueryClientProvider>
       </body>
     </html>
   );
