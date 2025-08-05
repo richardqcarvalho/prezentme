@@ -3,11 +3,18 @@
 import { getAccessToken } from "@/actions/credentials";
 import CompleteInput from "@/components/complete-input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { pages } from "@/data/pages";
 import { inputStore, pageStore } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
+import { useMemo } from "react";
 
 export default function Home() {
   const { page, setPage } = pageStore();
@@ -21,11 +28,16 @@ export default function Home() {
 
   if (!accessToken) redirect("/login");
 
+  const pageData = useMemo(() => pages[page], [page]);
+
   return (
     <div>
       <Card>
+        <CardHeader>
+          <CardTitle>{pageData.title}</CardTitle>
+        </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          {pages[page].map(({ id, label, placeholder }) => (
+          {pageData.inputs.map(({ id, label, placeholder }) => (
             <CompleteInput
               key={id}
               id={id}
