@@ -18,6 +18,7 @@ import { useMemo } from "react";
 
 export default function Home() {
   const { page, setPage } = pageStore();
+  const pageData = useMemo(() => pages[page], [page]);
   const inputs = inputStore();
   const { data: accessToken, isPending } = useQuery({
     queryKey: ["access-token"],
@@ -27,8 +28,6 @@ export default function Home() {
   if (isPending) return <div />;
 
   if (!accessToken) redirect("/login");
-
-  const pageData = useMemo(() => pages[page], [page]);
 
   return (
     <div>
