@@ -9,9 +9,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Presentation Generator",
-  description:
-    "A dashboard to devs to configure a presentation to them, to help them to showcase what they know and what they have in a nice way",
+  title: "PrezentMe",
 };
 
 export default function RootLayout({
