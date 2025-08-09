@@ -25,12 +25,10 @@ export default function Login() {
   return (
     <Card>
       <CardContent className="flex max-w-sm flex-col gap-3">
-        <span className="text-3xl font-bold">PrezentMe</span>
-        <span className="text-sm">
-          PrezentMe is a presentation generator so people can fill it with
-          information of them and generate a beautiful HTML to upload to their
-          website showcasing all they can offer to people interesting in their
-          jobs
+        <span className="text-6xl font-bold">PrezentMe</span>
+        <span className="text-xl">
+          Create your showcase to download your HTML with a good portfolio
+          presentation
         </span>
       </CardContent>
       <CardFooter className="flex gap-3">
