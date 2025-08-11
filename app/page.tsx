@@ -45,7 +45,7 @@ export default function Home() {
       </Card>
     );
 
-  if (!accessToken) redirect("/login");
+  if (accessToken === null) redirect("/login");
 
   return (
     <Card>

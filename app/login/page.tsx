@@ -1,15 +1,22 @@
 "use client";
 
-import { getClientId } from "@/actions/credentials";
+import { getClientId, setAccessToken } from "@/actions/credentials";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   const { data: clientId, isPending } = useQuery({
     queryKey: ["login"],
     queryFn: getClientId,
+  });
+  const { mutate } = useMutation({
+    mutationFn: setAccessToken,
+    onSuccess() {
+      router.push("/");
+    },
   });
 
   if (!clientId) return;
@@ -20,6 +27,10 @@ export default function Login() {
 
   function handleLogin() {
     redirect(`https://github.com/login/oauth/authorize?${urlParams}`);
+  }
+
+  function handleProceed() {
+    mutate("");
   }
 
   return (
@@ -47,7 +58,7 @@ export default function Login() {
           Login with GitHub
         </Button>
         <Button
-          onClick={() => {}}
+          onClick={handleProceed}
           className="cursor-pointer"
           size="lg"
           variant="secondary"

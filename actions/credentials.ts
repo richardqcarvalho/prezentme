@@ -14,3 +14,9 @@ export async function getAccessToken() {
 
   return cookie.value;
 }
+
+export async function setAccessToken(accessToken: string) {
+  const cookieStore = await cookies();
+
+  cookieStore.set("access_token", accessToken);
+}
