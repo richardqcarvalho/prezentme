@@ -1,6 +1,6 @@
 "use client";
 
-import { getClientId, setAccessToken } from "@/actions/credentials";
+import { getClientId, setAccessToken } from "@/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useMutation, useQuery } from "@tanstack/react-query";

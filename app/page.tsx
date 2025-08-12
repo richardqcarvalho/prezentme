@@ -1,6 +1,6 @@
 "use client";
 
-import { getAccessToken } from "@/actions/credentials";
+import { getAccessToken } from "@/actions";
 import CompleteInput from "@/components/complete-input";
 import { Button } from "@/components/ui/button";
 import {
