@@ -5,11 +5,10 @@ PrezentMe is a presentation generator so people can fill it with information of 
 - Next.js
 - TailwindCSS
 - Shadcn/ui
-- Zustand
-- React Query
+- React Hook Form
+- Zod
 
 ### Tasks
-- [ ] Store all informations
-- [ ] Generate HTML with stored information
+- [ ] Generate HTML
 - [ ] Use GitHub login to automatically retrieve all projects
 - [ ] Use LinkedIn login to automatically retrieve all experiences
