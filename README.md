@@ -7,3 +7,9 @@ PrezentMe is a presentation generator so people can fill it with information of 
 - Shadcn/ui
 - Zustand
 - React Query
+
+### Tasks
+- [ ] Store all informations
+- [ ] Generate HTML with stored information
+- [ ] Use GitHub login to automatically retrieve all projects
+- [ ] Use LinkedIn login to automatically retrieve all experiences
