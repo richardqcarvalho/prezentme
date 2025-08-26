@@ -1,5 +1,7 @@
 "use client";
 
+import { generateHTML } from "@/app/informations/actions";
+import { DEFAULT_INFORMATIONS } from "@/app/informations/data";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,17 +12,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ButtonStateT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
-const DEFAULT_INFORMATIONS = {
-  firstName: "",
-  lastName: "",
-  number: "",
-  location: "",
-  email: "",
-};
 
 const formSchema = z.object({
   firstName: z.string().nonempty(),
@@ -31,23 +28,48 @@ const formSchema = z.object({
 });
 
 export default function InformationsForm() {
+  const [buttonState, setButtonState] = useState<ButtonStateT>("initial");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: DEFAULT_INFORMATIONS,
   });
 
-  function onSubmit(informations: z.infer<typeof formSchema>) {
-    console.log(informations);
+  function getButtonText() {
+    switch (buttonState) {
+      case "generated":
+        return "Generated";
+      case "generating":
+        return "Generating";
+      default:
+        return "Generate";
+    }
+  }
+
+  async function onSubmit(informations: z.infer<typeof formSchema>) {
+    setButtonState("generating");
+    await generateHTML(informations);
+    const response = await fetch("http://localhost:3000/download");
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.setAttribute("download", "index.html");
+    a.click();
+
+    setButtonState("generated");
+    setTimeout(() => setButtonState("initial"), 5000);
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full flex-col justify-between"
+        className="flex h-full flex-col gap-8"
       >
         <div className="space-y-8">
           <FormField
+            disabled={buttonState === "generating"}
             control={form.control}
             name="firstName"
             render={({ field }) => (
@@ -61,6 +83,7 @@ export default function InformationsForm() {
             )}
           />
           <FormField
+            disabled={buttonState === "generating"}
             control={form.control}
             name="lastName"
             render={({ field }) => (
@@ -74,6 +97,7 @@ export default function InformationsForm() {
             )}
           />
           <FormField
+            disabled={buttonState === "generating"}
             control={form.control}
             name="number"
             render={({ field }) => (
@@ -87,6 +111,7 @@ export default function InformationsForm() {
             )}
           />
           <FormField
+            disabled={buttonState === "generating"}
             control={form.control}
             name="location"
             render={({ field }) => (
@@ -100,6 +125,7 @@ export default function InformationsForm() {
             )}
           />
           <FormField
+            disabled={buttonState === "generating"}
             control={form.control}
             name="email"
             render={({ field }) => (
@@ -114,7 +140,16 @@ export default function InformationsForm() {
           />
         </div>
         <div>
-          <Button type="submit">Generate portfolio</Button>
+          <Button
+            type="submit"
+            className={cn({
+              "cursor-pointer": true,
+              "bg-green-600": buttonState === "generated",
+            })}
+            disabled={buttonState !== "initial"}
+          >
+            <span>{getButtonText()}</span>
+          </Button>
         </div>
       </form>
     </Form>
