@@ -6,7 +6,7 @@ import path from "node:path";
 
 export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
   const HTML = await readFile(
-    path.resolve("app", "informations", "template.html"),
+    path.resolve(".", "app", "informations", "template.html"),
   );
   const filledHTML = HTML.toString()
     .replaceAll("${informations.firstName}", informations.firstName)
