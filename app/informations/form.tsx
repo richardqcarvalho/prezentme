@@ -1,6 +1,6 @@
 "use client";
 
-import { generateHTML, getHTML } from "@/app/informations/actions";
+import { generateHTML } from "@/app/informations/actions";
 import { DEFAULT_INFORMATIONS } from "@/app/informations/data";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ButtonStateT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -32,6 +33,7 @@ export default function InformationsForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: DEFAULT_INFORMATIONS,
+    disabled: buttonState !== "initial",
   });
 
   function getButtonText() {
@@ -47,9 +49,8 @@ export default function InformationsForm() {
 
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setButtonState("generating");
-    await generateHTML(informations);
-    const blob = await getHTML(window.location.origin);
-    const url = window.URL.createObjectURL(blob);
+    const HTML = await generateHTML(informations);
+    const url = window.URL.createObjectURL(HTML);
     const a = document.createElement("a");
 
     a.href = url;
@@ -57,7 +58,6 @@ export default function InformationsForm() {
     a.click();
 
     setButtonState("generated");
-    setTimeout(() => setButtonState("initial"), 5000);
   }
 
   return (
@@ -68,7 +68,6 @@ export default function InformationsForm() {
       >
         <div className="space-y-8">
           <FormField
-            disabled={buttonState === "generating"}
             control={form.control}
             name="firstName"
             render={({ field }) => (
@@ -82,7 +81,6 @@ export default function InformationsForm() {
             )}
           />
           <FormField
-            disabled={buttonState === "generating"}
             control={form.control}
             name="lastName"
             render={({ field }) => (
@@ -96,7 +94,6 @@ export default function InformationsForm() {
             )}
           />
           <FormField
-            disabled={buttonState === "generating"}
             control={form.control}
             name="number"
             render={({ field }) => (
@@ -110,7 +107,6 @@ export default function InformationsForm() {
             )}
           />
           <FormField
-            disabled={buttonState === "generating"}
             control={form.control}
             name="location"
             render={({ field }) => (
@@ -124,7 +120,6 @@ export default function InformationsForm() {
             )}
           />
           <FormField
-            disabled={buttonState === "generating"}
             control={form.control}
             name="email"
             render={({ field }) => (
@@ -138,7 +133,7 @@ export default function InformationsForm() {
             )}
           />
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <Button
             type="submit"
             className={cn({
@@ -148,7 +143,16 @@ export default function InformationsForm() {
             disabled={buttonState !== "initial"}
           >
             <span>{getButtonText()}</span>
+            {buttonState === "generated" && <Check />}
           </Button>
+          {buttonState === "generated" && (
+            <Button
+              className="cursor-pointer"
+              onClick={() => setButtonState("initial")}
+            >
+              <span>Edit</span>
+            </Button>
+          )}
         </div>
       </form>
     </Form>

@@ -1,47 +1,19 @@
 "use server";
 
 import { DEFAULT_INFORMATIONS } from "@/app/informations/data";
-import { writeFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
-  const HTML = `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      body {
-        width: 100svw;
-        height: 100svh;
-        margin: 0;
-      }
+  const HTML = await readFile(
+    path.resolve("app", "informations", "template.html"),
+  );
+  const filledHTML = HTML.toString()
+    .replaceAll("${informations.firstName}", informations.firstName)
+    .replaceAll("${informations.lastName}", informations.lastName)
+    .replaceAll("${informations.number}", informations.number)
+    .replaceAll("${informations.location}", informations.location)
+    .replaceAll("${informations.email}", informations.email);
 
-      main {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <span>${informations.firstName} ${informations.lastName}</span>
-      <span>${informations.number}</span>
-      <span>${informations.location}</span>
-      <span>${informations.email}</span>
-    </main>
-  </body>
-</html>`;
-
-  await writeFile("index.html", HTML);
-}
-
-export async function getHTML(origin: string) {
-  const response = await fetch(`${origin}/download`);
-  const blob = await response.blob();
-
-  return blob;
+  return new Blob([filledHTML]);
 }
