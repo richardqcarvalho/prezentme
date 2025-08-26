@@ -39,8 +39,8 @@ export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
   await writeFile("index.html", HTML);
 }
 
-export async function getHTML() {
-  const response = await fetch(`http://${process.env.VERCEL_URL}/download`);
+export async function getHTML(origin: string) {
+  const response = await fetch(`${origin}/download`);
   const blob = await response.blob();
 
   return blob;

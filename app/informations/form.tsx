@@ -48,7 +48,7 @@ export default function InformationsForm() {
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setButtonState("generating");
     await generateHTML(informations);
-    const blob = await getHTML();
+    const blob = await getHTML(window.location.origin);
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
 
