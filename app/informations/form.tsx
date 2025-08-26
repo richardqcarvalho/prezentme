@@ -1,6 +1,6 @@
 "use client";
 
-import { generateHTML } from "@/app/informations/actions";
+import { generateHTML, getHTML } from "@/app/informations/actions";
 import { DEFAULT_INFORMATIONS } from "@/app/informations/data";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,8 +48,7 @@ export default function InformationsForm() {
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setButtonState("generating");
     await generateHTML(informations);
-    const response = await fetch("http://localhost:3000/download");
-    const blob = await response.blob();
+    const blob = await getHTML();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
 
