@@ -1,19 +1,12 @@
-"use server";
-
-import { DEFAULT_INFORMATIONS } from "@/app/informations/data";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import DEFAULT_INFORMATIONS from "@/data/informations";
+import { HTML } from "@/data/template";
 
 export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
-  const HTML = await readFile(
-    path.join(process.cwd(), "public", "template.html"),
-  );
-  const filledHTML = HTML.toString()
-    .replaceAll("${informations.firstName}", informations.firstName)
-    .replaceAll("${informations.lastName}", informations.lastName)
-    .replaceAll("${informations.number}", informations.number)
-    .replaceAll("${informations.location}", informations.location)
-    .replaceAll("${informations.email}", informations.email);
+  const filledHTML = HTML.replaceAll("{firstName}", informations.firstName)
+    .replaceAll("{lastName}", informations.lastName)
+    .replaceAll("{number}", informations.number)
+    .replaceAll("{location}", informations.location)
+    .replaceAll("{email}", informations.email);
 
   return new Blob([filledHTML]);
 }

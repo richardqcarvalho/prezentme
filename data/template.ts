@@ -1,0 +1,136 @@
+const CSS = `
+  * {
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 100svw;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+  }
+
+  .name-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .first-name,
+  .last-name {
+    font-size: 78pt;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .last-name {
+    margin-top: -2rem;
+  }
+
+  .number,
+  .address,
+  .email,
+  .title {
+    font-size: 20pt;
+  }
+
+  .title {
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .infos {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-title {
+    font-size: 16pt;
+  }
+
+  @media (max-width: 645px) {
+    .first-name,
+    .last-name {
+      font-size: 42pt;
+    }
+
+    .last-name {
+      margin-top: -1rem;
+    }
+
+    .number,
+    .address,
+    .email,
+    .title {
+      font-size: 16pt;
+    }
+
+    .info-title {
+      font-size: 12pt;
+    }
+  }
+`;
+
+export const HTML = `
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style>${CSS}</style>
+  </head>
+  <body>
+    <main>
+      <div class="name-wrapper">
+        <span class="first-name">{firstName}</span>
+        <span class="last-name">{lastName}</span>
+      </div>
+      <div class="contact">
+        <span class="title">Contact</span>
+        <div class="infos">
+          <div class="info">
+            <span class="info-title">Email</span>
+            <span class="email">{email}</span>
+          </div>
+          <div class="info">
+            <span class="info-title">Number</span>
+            <a class="number" href="https://wa.me/{number}" target="_blank">
+              {number}
+            </a>
+          </div>
+          <div class="info">
+            <span class="info-title">Location</span>
+            <span class="address">{location}</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+`;
