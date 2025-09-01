@@ -14,6 +14,7 @@ export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
   const age = Math.floor((Date.now() - birthDate.getTime()) / 31540000000);
   const filledHTML = HTML.replaceAll("{firstName}", informations.firstName)
     .replaceAll("{lastName}", informations.lastName)
+    .replaceAll("{role}", informations.role)
     .replaceAll("{birthDate}", `${birthDateString} (${age} years old)`)
     .replaceAll("{number}", informations.number)
     .replaceAll("{location}", informations.location)

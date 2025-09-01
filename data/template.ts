@@ -33,7 +33,8 @@ const CSS = `
   }
 
   .first-name,
-  .last-name {
+  .last-name,
+  .role {
     font-size: 78pt;
     font-weight: 900;
     text-transform: uppercase;
@@ -41,6 +42,10 @@ const CSS = `
 
   .last-name {
     margin-top: -2rem;
+  }
+
+  .role {
+    font-size: 32pt;
   }
 
   a {
@@ -91,6 +96,10 @@ const CSS = `
       margin-top: -1rem;
     }
 
+    .role {
+      font-size: 20pt;
+    }
+
     .info-description,
     .subsection-title {
       font-size: 16pt;
@@ -121,6 +130,7 @@ export const HTML = `
       <div class="name-wrapper">
         <span class="first-name">{firstName}</span>
         <span class="last-name">{lastName}</span>
+        <span class="role">{role}</span>
       </div>
       <div class="subsection">
         <span class="subsection-title">About me</span>

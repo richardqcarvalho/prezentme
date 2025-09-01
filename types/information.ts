@@ -34,6 +34,7 @@ export type SetupT = {
 export type InformationsT = {
   firstName: string;
   lastName: string;
+  role: string;
   birthDate: string;
   number: string;
   location: string;
