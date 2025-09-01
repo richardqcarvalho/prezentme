@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import DEFAULT_INFORMATIONS from "@/data/informations";
+import DEFAULT_INFORMATIONS from "@/data/information";
 import { cn } from "@/lib/utils";
 import { ButtonStateT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,9 +23,15 @@ import z from "zod";
 const formSchema = z.object({
   firstName: z.string().nonempty(),
   lastName: z.string().nonempty(),
+  birthDate: z.string().nonempty(),
   number: z.string().nonempty(),
   location: z.string().nonempty(),
   email: z.string().nonempty(),
+  language: z.array(z.any()),
+  experience: z.array(z.any()),
+  education: z.array(z.any()),
+  project: z.array(z.any()),
+  setup: z.array(z.any()),
 });
 
 export default function InformationsForm() {
@@ -88,6 +94,23 @@ export default function InformationsForm() {
                 <FormLabel>Last name</FormLabel>
                 <FormControl>
                   <Input placeholder="What's your last name?" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="birthDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Birth date</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="When did you have birth?"
+                    type="date"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
