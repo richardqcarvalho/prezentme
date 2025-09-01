@@ -1,5 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import Button from "@/components/button";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -8,12 +9,9 @@ export default function Footer() {
 
   return (
     <div>
-      <Button
-        className="cursor-pointer"
-        onClick={() => router.push("/informations")}
-      >
+      <Button onClick={() => router.push("/informations")}>
         <span>Create your portfolio</span>
-        <ArrowRight />
+        <ArrowRight className="h-4 w-4" />
       </Button>
     </div>
   );

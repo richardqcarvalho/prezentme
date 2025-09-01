@@ -4,7 +4,6 @@ PrezentMe is a presentation generator so people can fill it with information of 
 ### Technologies used:
 - Next.js
 - TailwindCSS
-- Shadcn/ui
 - React Hook Form
 - Zod
 
