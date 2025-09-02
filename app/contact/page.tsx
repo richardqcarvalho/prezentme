@@ -30,7 +30,7 @@ export default function Contact() {
 
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setInformation(informations);
-    router.push("/informations/language");
+    router.push("/language");
   }
 
   return (

@@ -15,12 +15,7 @@ export const DEFAULT_INFORMATIONS: InformationsT = {
   number: "",
   location: "",
   email: "",
-  language: [
-    {
-      name: "",
-      level: "",
-    },
-  ],
+  language: [],
   experience: [],
   education: [],
   project: [],

@@ -37,7 +37,7 @@ export default function AboutMe() {
 
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setInformation(informations);
-    router.push("/informations/contact");
+    router.push("/contact");
   }
 
   return (

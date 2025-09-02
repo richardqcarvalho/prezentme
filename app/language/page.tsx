@@ -1,6 +1,6 @@
 "use client";
 
-import { generateHTML } from "@/app/informations/actions";
+import { generateHTML } from "@/app/about-me/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ export default function Language() {
   }
 
   useEffect(() => {
-    append(language);
+    if (fields.length === 0) append({ name: "", level: "" });
   }, []);
 
   return (
