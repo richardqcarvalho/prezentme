@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lato.variable} flex h-svh w-svw justify-center antialiased`}
+        className={`${lato.variable} font-lato flex h-svh w-svw justify-center antialiased`}
       >
         {children}
       </body>
