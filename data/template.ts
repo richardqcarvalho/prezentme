@@ -173,15 +173,6 @@ export const HTML = `
           </div>
         </div>
       </div>
-      <!--<div class="subsection">
-        <span class="subsection-title"></span>
-        <div class="infos">
-          <div class="info">
-            <span class="info-title"></span>
-            <span class="info-description"></span>
-          </div>
-        </div>
-      </div>-->
       {language}
       {experience}
       {education}

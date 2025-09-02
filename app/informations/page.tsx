@@ -1,14 +1,10 @@
 "use client";
 
-import { generateHTML } from "@/app/informations/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
-import { DEFAULT_INFORMATIONS } from "@/data/information";
-import { cn } from "@/lib/utils";
-import { ButtonStateT } from "@/model/form";
+import { informationStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -17,56 +13,37 @@ const formSchema = z.object({
   lastName: z.string().nonempty(),
   role: z.string().nonempty(),
   birthDate: z.string().nonempty(),
-  number: z.string().nonempty(),
   location: z.string().nonempty(),
-  email: z.string().nonempty(),
-  language: z.array(z.any()),
-  experience: z.array(z.any()),
-  education: z.array(z.any()),
-  project: z.array(z.any()),
-  setup: z.array(z.any()),
 });
 
-export default function Informations() {
-  const [buttonState, setButtonState] = useState<ButtonStateT>("initial");
+export default function AboutMe() {
+  const router = useRouter();
+  const { setInformation, firstName, lastName, role, birthDate, location } =
+    informationStore();
   const {
     handleSubmit,
     register,
     formState: { isValid },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: DEFAULT_INFORMATIONS,
-    disabled: buttonState !== "initial",
+    values: {
+      firstName,
+      lastName,
+      role,
+      birthDate,
+      location,
+    },
   });
 
-  function getButtonText() {
-    switch (buttonState) {
-      case "generated":
-        return "Generated";
-      case "generating":
-        return "Generating";
-      default:
-        return "Generate";
-    }
-  }
-
   async function onSubmit(informations: z.infer<typeof formSchema>) {
-    setButtonState("generating");
-    const HTML = await generateHTML(informations);
-    const url = window.URL.createObjectURL(HTML);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.setAttribute("download", "index.html");
-    a.click();
-
-    setButtonState("generated");
+    setInformation(informations);
+    router.push("/informations/contact");
   }
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[24rem] flex-col items-center gap-4 p-8 lg:w-[48rem]"
+      className="flex w-[26rem] flex-col items-center gap-4 p-8"
     >
       <Input
         placeholder="What's your first name?"
@@ -90,37 +67,13 @@ export default function Informations() {
         {...register("birthDate")}
       />
       <Input
-        placeholder="Tell us your contact number"
-        label="Number"
-        {...register("number")}
-      />
-      <Input
         placeholder="Where do you live?"
         label="Location"
         {...register("location")}
       />
-      <Input
-        placeholder="Type your best e-mail"
-        label="Email"
-        {...register("email")}
-      />
-      <div className="mt-2 flex flex-col gap-2">
-        <Button
-          type="submit"
-          className={cn({
-            "bg-green-600": buttonState === "generated",
-          })}
-          disabled={buttonState !== "initial" || !isValid}
-        >
-          <span>{getButtonText()}</span>
-          {buttonState === "generated" && <Check />}
-        </Button>
-        {buttonState === "generated" && (
-          <Button onClick={() => setButtonState("initial")}>
-            <span>Edit</span>
-          </Button>
-        )}
-      </div>
+      <Button type="submit" disabled={!isValid} className="mt-4">
+        <span>Next</span>
+      </Button>
     </form>
   );
 }

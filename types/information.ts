@@ -1,3 +1,5 @@
+import { DEFAULT_INFORMATIONS } from "@/data/information";
+
 export type LanguageT = {
   name: string;
   level: string;
@@ -44,4 +46,8 @@ export type InformationsT = {
   education: EducationT[];
   project: ProjectT[];
   setup: SetupT[];
+};
+
+export type InformationsStoreT = typeof DEFAULT_INFORMATIONS & {
+  setInformation: (informations: Partial<typeof DEFAULT_INFORMATIONS>) => void;
 };
