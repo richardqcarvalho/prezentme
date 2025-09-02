@@ -11,6 +11,7 @@ type TechnologyT = {
 
 export type ExperienceT = {
   title: string;
+  company: string;
   start: string;
   end: string;
   description: string;
@@ -19,11 +20,14 @@ export type ExperienceT = {
 
 export type EducationT = {
   title: string;
-  description: string;
+  university: string;
+  start: string;
+  end: string;
 };
 
 export type ProjectT = {
   title: string;
+  url: string;
   description: string;
   technologies: TechnologyT[];
 };
