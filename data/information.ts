@@ -1,6 +1,13 @@
-import { InformationsT } from "@/types/information";
+import {
+  EducationT,
+  ExperienceT,
+  InformationsT,
+  LanguageT,
+  ProjectT,
+  SetupT,
+} from "@/model/information";
 
-const DEFAULT_INFORMATIONS: InformationsT = {
+export const DEFAULT_INFORMATIONS: InformationsT = {
   firstName: "",
   lastName: "",
   role: "",
@@ -15,4 +22,22 @@ const DEFAULT_INFORMATIONS: InformationsT = {
   setup: [],
 };
 
-export default DEFAULT_INFORMATIONS;
+export function getLanguage(languages: LanguageT[]) {
+  return "";
+}
+
+export function getExperience(experiences: ExperienceT[]) {
+  return "";
+}
+
+export function getEducation(educations: EducationT[]) {
+  return "";
+}
+
+export function getProject(projects: ProjectT[]) {
+  return "";
+}
+
+export function getSetup(setups: SetupT[]) {
+  return "";
+}

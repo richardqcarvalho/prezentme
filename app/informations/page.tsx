@@ -3,9 +3,9 @@
 import { generateHTML } from "@/app/informations/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
-import DEFAULT_INFORMATIONS from "@/data/information";
+import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { cn } from "@/lib/utils";
-import { ButtonStateT } from "@/types/form";
+import { ButtonStateT } from "@/model/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useState } from "react";

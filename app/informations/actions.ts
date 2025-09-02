@@ -1,12 +1,12 @@
-import DEFAULT_INFORMATIONS from "@/data/information";
-import { HTML } from "@/data/template";
 import {
+  DEFAULT_INFORMATIONS,
   getEducation,
   getExperience,
   getLanguage,
   getProject,
   getSetup,
-} from "@/lib/utils";
+} from "@/data/information";
+import { HTML } from "@/data/template";
 
 export async function generateHTML(informations: typeof DEFAULT_INFORMATIONS) {
   const birthDate = new Date(`${informations.birthDate}T00:00:00`);
