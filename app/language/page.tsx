@@ -1,50 +1,62 @@
 "use client";
 
-import { generateHTML } from "@/app/about-me/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
+import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { cn } from "@/lib/utils";
 import { informationStore } from "@/store";
 import { Trash } from "lucide-react";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import z from "zod";
+
+const formSchema = z.object({
+  language: z.array(
+    z.object({
+      name: z.string().nonempty(),
+      level: z.string().nonempty(),
+    }),
+  ),
+});
 
 export default function Language() {
-  const { setInformation, language, ...rest } = informationStore();
+  const router = useRouter();
+  const hasRun = useRef(false);
+  const { setInformation, language } = informationStore();
   const {
     handleSubmit,
     register,
     control,
     formState: { isValid },
-  } = useForm();
+  } = useForm<z.infer<typeof formSchema>>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "language",
   });
 
-  async function onSubmit(informations: any) {
-    setInformation(informations);
-
-    const HTML = await generateHTML({ ...informations, ...rest });
-    const url = window.URL.createObjectURL(HTML);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.setAttribute("download", "index.html");
-    a.click();
-  }
-
   useEffect(() => {
-    if (fields.length === 0) append({ name: "", level: "" });
+    if (!hasRun.current) {
+      append(language);
+      hasRun.current = true;
+    }
   }, []);
+
+  async function onSubmit(informations: z.infer<typeof formSchema>) {
+    setInformation(informations);
+    router.push("/experience");
+  }
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-4 p-8"
+      className="flex w-[26rem] flex-col items-center gap-8 p-8"
     >
       {fields.map((field, index) => (
-        <div className="flex w-full flex-col gap-4" key={field.id}>
+        <div
+          className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8"
+          key={field.id}
+        >
           <div className="flex w-full justify-end">
             <Trash
               className={cn(
@@ -68,12 +80,17 @@ export default function Language() {
           />
         </div>
       ))}
-      <Button onClick={() => append({ name: "", level: "" })} className="mt-4">
-        <span>Add language</span>
-      </Button>
-      <Button type="submit" disabled={!isValid} className="mt-4">
-        <span>Generate</span>
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          onClick={() => append(DEFAULT_INFORMATIONS.language[0])}
+          type="button"
+        >
+          <span>Add language</span>
+        </Button>
+        <Button type="submit" disabled={!isValid}>
+          <span>Next</span>
+        </Button>
+      </div>
     </form>
   );
 }

@@ -15,7 +15,7 @@ const CSS = `
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    gap: 1.5rem;
+    gap: 2rem;
     width: 100%;
     height: 100%;
     overflow: auto;
@@ -70,16 +70,39 @@ const CSS = `
   .infos {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .info {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
+    border: 0.1rem rgba(0, 0, 0, 0.2) solid;
+    padding: 1rem;
+    border-radius: 1rem;
   }
 
   .info-title {
     font-size: 16pt;
+  }
+
+  .info-subtitle {
+    font-weight: 300;
+    font-size: 11pt;
+  }
+
+  .technologies {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .technology {
+    background-color: black;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 100px;
+    font-size: 9pt;
   }
 
   .footer {
@@ -184,6 +207,12 @@ export const HTML = `
           target="_blank"
         >
           PrezentMe
+        </a>
+        © <a
+          href="https://github.com/richardqcarvalho/prezentme"
+          target="_blank"
+        >
+          Richard Carvalho
         </a>
       </span>
     </main>
