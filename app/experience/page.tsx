@@ -49,10 +49,6 @@ export default function Experience() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   console.log(technologies);
-  // }, [technologies]);
-
   async function onSubmit(informations: z.infer<typeof formSchema>) {
     setInformation(informations);
 
