@@ -36,19 +36,21 @@ export default function Contact() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-4 p-8"
+      className="flex w-[26rem] flex-col items-center gap-8 p-8"
     >
-      <Input
-        placeholder="Tell us your contact number"
-        label="Number"
-        {...register("number")}
-      />
-      <Input
-        placeholder="Type your best e-mail"
-        label="Email"
-        {...register("email")}
-      />
-      <Button type="submit" disabled={!isValid} className="mt-4">
+      <div className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8">
+        <Input
+          placeholder="Tell us your contact number"
+          label="Number"
+          {...register("number")}
+        />
+        <Input
+          placeholder="Type your best e-mail"
+          label="Email"
+          {...register("email")}
+        />
+      </div>
+      <Button type="submit" disabled={!isValid}>
         <span>Next</span>
       </Button>
     </form>

@@ -43,35 +43,37 @@ export default function AboutMe() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-4 p-8"
+      className="flex w-[26rem] flex-col items-center gap-8 p-8"
     >
-      <Input
-        placeholder="What's your first name?"
-        label="First name"
-        {...register("firstName")}
-      />
-      <Input
-        placeholder="What's your last name?"
-        label="Last name"
-        {...register("lastName")}
-      />
-      <Input
-        placeholder="What's your role?"
-        label="Role"
-        {...register("role")}
-      />
-      <Input
-        placeholder="When did you have birth?"
-        label="Birth date"
-        type="date"
-        {...register("birthDate")}
-      />
-      <Input
-        placeholder="Where do you live?"
-        label="Location"
-        {...register("location")}
-      />
-      <Button type="submit" disabled={!isValid} className="mt-4">
+      <div className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8">
+        <Input
+          placeholder="What's your first name?"
+          label="First name"
+          {...register("firstName")}
+        />
+        <Input
+          placeholder="What's your last name?"
+          label="Last name"
+          {...register("lastName")}
+        />
+        <Input
+          placeholder="What's your role?"
+          label="Role"
+          {...register("role")}
+        />
+        <Input
+          placeholder="When did you have birth?"
+          label="Birth date"
+          type="date"
+          {...register("birthDate")}
+        />
+        <Input
+          placeholder="Where do you live?"
+          label="Location"
+          {...register("location")}
+        />
+      </div>
+      <Button type="submit" disabled={!isValid}>
         <span>Next</span>
       </Button>
     </form>
