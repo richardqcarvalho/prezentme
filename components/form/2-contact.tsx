@@ -2,35 +2,33 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
-import { informationStore } from "@/store";
+import { LANGUAGE_PAGE } from "@/lib/constants";
+import { informationStore, pageStore } from "@/store";
+import { contactSchema, ContactT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import z from "zod";
-
-const formSchema = z.object({
-  number: z.string().nonempty(),
-  email: z.string().nonempty(),
-});
 
 export default function Contact() {
-  const router = useRouter();
-  const { setInformation, number, email } = informationStore();
+  const { setInformation, gitHub, linkedIn, number, email } =
+    informationStore();
+  const { setPage } = pageStore();
   const {
     handleSubmit,
     register,
     formState: { isValid },
-  } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  } = useForm<ContactT>({
+    resolver: zodResolver(contactSchema),
     values: {
+      gitHub,
+      linkedIn,
       number,
       email,
     },
   });
 
-  async function onSubmit(informations: z.infer<typeof formSchema>) {
+  async function onSubmit(informations: ContactT) {
     setInformation(informations);
-    router.push("/language");
+    setPage(LANGUAGE_PAGE);
   }
 
   return (
@@ -39,6 +37,16 @@ export default function Contact() {
       className="flex w-[26rem] flex-col items-center gap-8 p-8"
     >
       <div className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8">
+        <Input
+          placeholder="Type your GitHub"
+          label="GitHub"
+          {...register("gitHub")}
+        />
+        <Input
+          placeholder="Type your LinkedIn"
+          label="LinkedIn"
+          {...register("linkedIn")}
+        />
         <Input
           placeholder="Tell us your contact number"
           label="Number"

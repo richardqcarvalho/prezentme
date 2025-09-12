@@ -9,7 +9,7 @@ export default function Footer() {
 
   return (
     <div>
-      <Button onClick={() => router.push("/about-me")}>
+      <Button onClick={() => router.push("/generate")}>
         <span>Create your portfolio</span>
         <ArrowRight className="h-4 w-4" />
       </Button>

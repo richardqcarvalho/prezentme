@@ -2,42 +2,33 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
-import { informationStore } from "@/store";
+import { CONTACT_PAGE } from "@/lib/constants";
+import { informationStore, pageStore } from "@/store";
+import { personalInfoSchema, PersonalInfoT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import z from "zod";
 
-const formSchema = z.object({
-  firstName: z.string().nonempty(),
-  lastName: z.string().nonempty(),
-  role: z.string().nonempty(),
-  birthDate: z.string().nonempty(),
-  location: z.string().nonempty(),
-});
-
-export default function AboutMe() {
-  const router = useRouter();
-  const { setInformation, firstName, lastName, role, birthDate, location } =
+export default function PersonalInformation() {
+  const { setInformation, firstName, lastName, role, location } =
     informationStore();
+  const { setPage } = pageStore();
   const {
     handleSubmit,
     register,
     formState: { isValid },
-  } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  } = useForm<PersonalInfoT>({
+    resolver: zodResolver(personalInfoSchema),
     values: {
       firstName,
       lastName,
       role,
-      birthDate,
       location,
     },
   });
 
-  async function onSubmit(informations: z.infer<typeof formSchema>) {
+  async function onSubmit(informations: PersonalInfoT) {
     setInformation(informations);
-    router.push("/contact");
+    setPage(CONTACT_PAGE);
   }
 
   return (
@@ -60,12 +51,6 @@ export default function AboutMe() {
           placeholder="What's your role?"
           label="Role"
           {...register("role")}
-        />
-        <Input
-          placeholder="When did you have birth?"
-          label="Birth date"
-          type="date"
-          {...register("birthDate")}
         />
         <Input
           placeholder="Where do you live?"

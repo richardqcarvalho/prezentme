@@ -1,6 +1,6 @@
 import Footer from "@/app/footer";
 
-export default function Home() {
+export default function Welcome() {
   return (
     <div className="flex flex-1 flex-col p-8">
       <span className="text-lg font-black">PrezentMe</span>

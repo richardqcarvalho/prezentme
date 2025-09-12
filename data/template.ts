@@ -57,6 +57,17 @@ const CSS = `
     color: black;
   }
 
+  .links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .link {
+    font-size: 16pt;
+  }
+
   .info-description,
   .subsection-title {
     font-size: 20pt;
@@ -154,14 +165,26 @@ export const HTML = `
         <span class="first-name">{firstName}</span>
         <span class="last-name">{lastName}</span>
         <span class="role">{role}</span>
+        <div class="links">
+          <a
+            class="link"
+            href="{gitHub}"
+            target="_blank"
+          >
+            GitHub
+          </a>
+          <a
+            class="link"
+            href="{linkedIn}"
+            target="_blank"
+          >
+            LinkedIn
+          </a>
+        </div>
       </div>
       <div class="subsection">
         <span class="subsection-title">About me</span>
         <div class="infos">
-          <div class="info">
-            <span class="info-title">Birth date</span>
-            <span class="info-description">{birthDate}</span>
-          </div>
           <div class="info">
             <span class="info-title">Location</span>
             <span class="info-description">{location}</span>
@@ -208,7 +231,8 @@ export const HTML = `
         >
           PrezentMe
         </a>
-        © <a
+        ©
+        <a
           href="https://github.com/richardqcarvalho/prezentme"
           target="_blank"
         >

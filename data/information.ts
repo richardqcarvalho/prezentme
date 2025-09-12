@@ -1,4 +1,5 @@
 import { HTML } from "@/data/template";
+import { MILLISECONDS_TO_MONTH, MILLISECONDS_TO_YEAR } from "@/lib/constants";
 import {
   EducationT,
   ExperienceT,
@@ -12,8 +13,9 @@ export const DEFAULT_INFORMATIONS: InformationsT = {
   firstName: "",
   lastName: "",
   role: "",
-  birthDate: "",
   number: "",
+  gitHub: "",
+  linkedIn: "",
   location: "",
   email: "",
   language: [
@@ -57,13 +59,11 @@ export const DEFAULT_INFORMATIONS: InformationsT = {
 };
 
 export async function generateHTML(informations: InformationsT) {
-  const birthDate = new Date(`${informations.birthDate}T00:00:00`);
-  const birthDateString = birthDate.toLocaleDateString();
-  const age = Math.floor((Date.now() - birthDate.getTime()) / 31540000000);
   const filledHTML = HTML.replaceAll("{firstName}", informations.firstName)
     .replaceAll("{lastName}", informations.lastName)
     .replaceAll("{role}", informations.role)
-    .replaceAll("{birthDate}", `${birthDateString} (${age} years old)`)
+    .replaceAll("{gitHub}", informations.gitHub)
+    .replaceAll("{linkedIn}", informations.linkedIn)
     .replaceAll("{number}", informations.number)
     .replaceAll("{location}", informations.location)
     .replaceAll("{email}", informations.email)
@@ -105,8 +105,10 @@ export function getExperience(experiences: ExperienceT[]) {
     const [endYear, endMonth] = experience.end.split("-");
     const difference = endDate.getTime() - startDate.getTime();
     totalExperience += difference;
-    const years = Math.floor(difference / 31536000000);
-    const months = Math.floor((difference % 31536000000) / 2628002880);
+    const years = Math.floor(difference / MILLISECONDS_TO_YEAR);
+    const months = Math.floor(
+      (difference % MILLISECONDS_TO_YEAR) / MILLISECONDS_TO_MONTH,
+    );
     const tuple = [];
     if (years > 0) tuple.push(`${years}y`);
     if (months > 0) tuple.push(`${months}m`);
@@ -117,19 +119,27 @@ export function getExperience(experiences: ExperienceT[]) {
         <span class="info-subtitle">${experience.company}</span>
         <span class="info-subtitle">${startMonth}/${startYear} to ${endMonth}/${endYear} (${tuple.join(", ")})</span>
         <span class="info-description">${experience.description}</span>
-        <div class="technologies">
-          ${experience.technologies.reduce(
-            (HTML, technology) =>
-              HTML.concat(`<span class="technology">${technology}</span>`),
-            "",
-          )}
-        </div>
+        ${
+          experience.technologies.length > 0
+            ? `<div class="technologies">
+                ${experience.technologies.reduce(
+                  (HTML, technology) =>
+                    HTML.concat(
+                      `<span class="technology">${technology}</span>`,
+                    ),
+                  "",
+                )}
+              </div>`
+            : ""
+        }
       </div>
     `;
   }
 
-  const years = Math.floor(totalExperience / 31536000000);
-  const months = Math.floor((totalExperience % 31536000000) / 2628002880);
+  const years = Math.floor(totalExperience / MILLISECONDS_TO_YEAR);
+  const months = Math.floor(
+    (totalExperience % MILLISECONDS_TO_YEAR) / MILLISECONDS_TO_MONTH,
+  );
   const tuple = [];
   if (years > 0) tuple.push(`${years}y`);
   if (months > 0) tuple.push(`${months}m`);

@@ -35,7 +35,8 @@ export type InformationsT = {
   firstName: string;
   lastName: string;
   role: string;
-  birthDate: string;
+  gitHub: string;
+  linkedIn: string;
   number: string;
   location: string;
   email: string;
@@ -46,6 +47,6 @@ export type InformationsT = {
   setup: SetupT[];
 };
 
-export type InformationsStoreT = InformationsT & {
+export type InformationStoreT = InformationsT & {
   setInformation: (informations: Partial<InformationsT>) => void;
 };

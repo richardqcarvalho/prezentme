@@ -6,37 +6,20 @@ import TextArea from "@/components/text-area";
 import { DEFAULT_INFORMATIONS, generateHTML } from "@/data/information";
 import { cn } from "@/lib/utils";
 import { informationStore } from "@/store";
+import { ExperienceT } from "@/types/form";
 import { Trash } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import z from "zod";
-
-const formSchema = z.object({
-  experience: z.array(
-    z.object({
-      title: z.string().nonempty(),
-      company: z.string().nonempty(),
-      start: z.string().nonempty(),
-      end: z.string().nonempty(),
-      description: z.string().nonempty(),
-      technologies: z.array(z.string()).nonempty(),
-    }),
-  ),
-});
 
 export default function Experience() {
   const hasRun = useRef(false);
-  const [technologies, setTechnologies] = useState<string[][]>([[]]);
   const { setInformation, experience, ...rest } = informationStore();
   const {
     handleSubmit,
     register,
     control,
     formState: { isValid },
-    setValue,
-    watch,
-    getValues,
-  } = useForm<z.infer<typeof formSchema>>();
+  } = useForm<ExperienceT>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experience",
@@ -49,7 +32,7 @@ export default function Experience() {
     }
   }, []);
 
-  async function onSubmit(informations: z.infer<typeof formSchema>) {
+  async function onSubmit(informations: ExperienceT) {
     setInformation(informations);
 
     const HTML = await generateHTML({ ...informations, ...rest });

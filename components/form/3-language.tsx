@@ -3,33 +3,24 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
+import { EXPERIENCE_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { informationStore } from "@/store";
+import { informationStore, pageStore } from "@/store";
+import { LanguageT } from "@/types/form";
 import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import z from "zod";
-
-const formSchema = z.object({
-  language: z.array(
-    z.object({
-      name: z.string().nonempty(),
-      level: z.string().nonempty(),
-    }),
-  ),
-});
 
 export default function Language() {
-  const router = useRouter();
   const hasRun = useRef(false);
   const { setInformation, language } = informationStore();
+  const { setPage } = pageStore();
   const {
     handleSubmit,
     register,
     control,
     formState: { isValid },
-  } = useForm<z.infer<typeof formSchema>>();
+  } = useForm<LanguageT>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "language",
@@ -42,9 +33,9 @@ export default function Language() {
     }
   }, []);
 
-  async function onSubmit(informations: z.infer<typeof formSchema>) {
+  async function onSubmit(informations: LanguageT) {
     setInformation(informations);
-    router.push("/experience");
+    setPage(EXPERIENCE_PAGE);
   }
 
   return (

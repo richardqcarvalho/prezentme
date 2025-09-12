@@ -1,0 +1,6 @@
+export const PERSONAL_INFORMATIONS_PAGE = 0;
+export const CONTACT_PAGE = 1;
+export const LANGUAGE_PAGE = 2;
+export const EXPERIENCE_PAGE = 3;
+export const MILLISECONDS_TO_YEAR = 31536000000;
+export const MILLISECONDS_TO_MONTH = 2628002880;
