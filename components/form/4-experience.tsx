@@ -11,7 +11,7 @@ import { Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-export default function Experience() {
+export function Page() {
   const hasRun = useRef(false);
   const { setInformation, experience, ...rest } = informationStore();
   const {
@@ -108,3 +108,5 @@ export default function Experience() {
     </form>
   );
 }
+
+export const pageId = "experience";

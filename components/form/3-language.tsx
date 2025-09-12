@@ -11,7 +11,7 @@ import { Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-export default function Language() {
+export function Page() {
   const hasRun = useRef(false);
   const { setInformation, language } = informationStore();
   const { setPage } = pageStore();
@@ -85,3 +85,5 @@ export default function Language() {
     </form>
   );
 }
+
+export const pageId = "language";

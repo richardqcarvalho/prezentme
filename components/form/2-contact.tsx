@@ -8,7 +8,7 @@ import { contactSchema, ContactT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-export default function Contact() {
+export function Page() {
   const { setInformation, gitHub, linkedIn, number, email } =
     informationStore();
   const { setPage } = pageStore();
@@ -64,3 +64,5 @@ export default function Contact() {
     </form>
   );
 }
+
+export const pageId = "contact";

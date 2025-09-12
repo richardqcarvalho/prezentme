@@ -8,7 +8,7 @@ import { personalInfoSchema, PersonalInfoT } from "@/types/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-export default function PersonalInformation() {
+export function Page() {
   const { setInformation, firstName, lastName, role, location } =
     informationStore();
   const { setPage } = pageStore();
@@ -64,3 +64,5 @@ export default function PersonalInformation() {
     </form>
   );
 }
+
+export const pageId = "personal-information";
