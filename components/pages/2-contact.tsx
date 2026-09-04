@@ -59,7 +59,7 @@ export function Page() {
     <form
       noValidate
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-8 p-8"
+      className="w-form flex flex-col items-center gap-8 p-8"
     >
       <div className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8">
         <Input

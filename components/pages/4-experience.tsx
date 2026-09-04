@@ -2,13 +2,12 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
+import { RepeatableFieldGroup } from "@/components/repeatable-field-group";
 import TextArea from "@/components/text-area";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { EDUCATION_PAGE, LANGUAGE_PAGE } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 import { informationStore, pageStore } from "@/store";
 import type { ExperienceT as ExperienceInformationT } from "@/types/information";
-import { Trash } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,25 +88,14 @@ export function Page() {
     <form
       noValidate
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-8 py-8"
+      className="w-form flex flex-col items-center gap-8 py-8"
     >
       {fields.map((field, index) => (
-        <div
-          className="flex w-full flex-col gap-8 rounded-lg border border-black/20 p-8"
+        <RepeatableFieldGroup
           key={field.id}
+          canRemove={fields.length > 1}
+          onRemove={() => remove(index)}
         >
-          <div className="flex w-full justify-end">
-            <Trash
-              aria-label="Remove experience"
-              className={cn(
-                "h-4 w-4 cursor-pointer text-red-500 hover:text-red-500/70",
-                {
-                  "pointer-events-none text-red-500/70": fields.length === 1,
-                },
-              )}
-              onClick={() => remove(index)}
-            />
-          </div>
           <Input
             error={errors.experience?.[index]?.title?.message}
             label="Experience"
@@ -144,14 +132,14 @@ export function Page() {
             placeholder="React, TypeScript, Node.js"
             {...register(`experience.${index}.technologies`)}
           />
-        </div>
+        </RepeatableFieldGroup>
       ))}
       <div className="flex flex-col gap-2">
         <Button
+          variant="secondary"
           onClick={() =>
             append({ ...DEFAULT_INFORMATIONS.experience[0], technologies: "" })
           }
-          type="button"
         >
           <span>Add experience</span>
         </Button>

@@ -3,4 +3,5 @@
 
 @theme {
   --font-lato: var(--font-lato);
+  --width-form: 26rem;
 }
