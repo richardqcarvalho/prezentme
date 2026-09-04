@@ -7,11 +7,28 @@ export const personalInfoSchema = z.object({
   location: z.string().nonempty(),
 });
 
+// Reject `javascript:` and other non-http(s) schemes so user-supplied URLs
+// cannot become script-injecting `<a href>` payloads in the generated HTML.
+const httpUrl = z
+  .string()
+  .trim()
+  .refine(
+    (s) => {
+      try {
+        const u = new URL(s);
+        return u.protocol === "http:" || u.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "Must be a valid http(s) URL" },
+  );
+
 export const contactSchema = z.object({
-  gitHub: z.string().nonempty(),
-  linkedIn: z.string().nonempty(),
+  gitHub: httpUrl,
+  linkedIn: httpUrl,
   number: z.string().nonempty(),
-  email: z.string().nonempty(),
+  email: z.string().trim().email(),
 });
 
 export const languageSchema = z.object({

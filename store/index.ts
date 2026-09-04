@@ -18,7 +18,10 @@ export const informationStore = create<InformationStoreT>()(
   persist(
     (set) => ({
       ...DEFAULT_INFORMATIONS,
-      setInformation: (informations) => set(informations),
+      // Merge partial updates into the existing state so callers that submit a
+      // subset (e.g. only `{ language }`) don't wipe the other fields.
+      setInformation: (informations) =>
+        set((state) => ({ ...state, ...informations })),
     }),
     { name: "prezentme-information", version: 1 },
   ),
