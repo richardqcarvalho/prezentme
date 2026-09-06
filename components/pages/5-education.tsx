@@ -3,61 +3,42 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
-import { CONTACT_PAGE, EXPERIENCE_PAGE } from "@/lib/constants";
+import { EXPERIENCE_PAGE, PROJECT_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { informationStore, pageStore } from "@/store";
+import { educationSchema, EducationT } from "@/types/form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-const languageSchema = z.object({
-  language: z
-    .array(
-      z.object({
-        name: z.string().trim().min(1, "Enter a language."),
-        level: z.string().trim().min(1, "Enter a proficiency level."),
-      }),
-    )
-    .min(1, "Add at least one language."),
-});
-
-type LanguageFormValues = z.infer<typeof languageSchema>;
 
 export function Page() {
-  const { setInformation, language } = informationStore();
+  const { setInformation, education } = informationStore();
   const { setPage } = pageStore();
   const {
-    control,
-    getValues,
     handleSubmit,
     register,
-    formState: { errors, isValid },
-  } = useForm<LanguageFormValues>({
-    defaultValues: { language },
+    control,
+    getValues,
+    formState: { isValid },
+  } = useForm<EducationT>({
+    resolver: zodResolver(educationSchema),
+    defaultValues: { education },
     mode: "onChange",
-    resolver: zodResolver(languageSchema),
   });
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "language",
+    name: "education",
   });
 
-  function onSubmit(informations: LanguageFormValues) {
+  function onSubmit(informations: EducationT) {
     setInformation(informations);
-    setPage(EXPERIENCE_PAGE);
-  }
-
-  function goBack() {
-    setInformation(getValues());
-    setPage(CONTACT_PAGE);
+    setPage(PROJECT_PAGE);
   }
 
   return (
     <form
-      noValidate
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-[26rem] flex-col items-center gap-8 p-8"
+      className="flex w-[26rem] flex-col items-center gap-8 py-8"
     >
       {fields.map((field, index) => (
         <div
@@ -66,7 +47,6 @@ export function Page() {
         >
           <div className="flex w-full justify-end">
             <Trash
-              aria-label="Remove language"
               className={cn(
                 "h-4 w-4 cursor-pointer text-red-500 hover:text-red-500/70",
                 {
@@ -77,28 +57,44 @@ export function Page() {
             />
           </div>
           <Input
-            error={errors.language?.[index]?.name?.message}
-            label="Language"
-            placeholder="Which language?"
-            {...register(`language.${index}.name`)}
+            label="Degree or qualification"
+            placeholder="What did you study?"
+            {...register(`education.${index}.title`)}
           />
           <Input
-            error={errors.language?.[index]?.level?.message}
-            label="Level"
-            placeholder="What is your level?"
-            {...register(`language.${index}.level`)}
+            label="University"
+            placeholder="Where did you study?"
+            {...register(`education.${index}.university`)}
+          />
+          <Input
+            label="Start date"
+            placeholder="When did you start?"
+            type="month"
+            {...register(`education.${index}.start`)}
+          />
+          <Input
+            label="End date (optional)"
+            placeholder="Leave empty if ongoing"
+            type="month"
+            {...register(`education.${index}.end`)}
           />
         </div>
       ))}
       <div className="flex flex-col gap-2">
         <Button
-          onClick={() => append(DEFAULT_INFORMATIONS.language[0])}
+          onClick={() => append(DEFAULT_INFORMATIONS.education[0])}
           type="button"
         >
-          <span>Add language</span>
+          <span>Add education</span>
         </Button>
         <div className="flex gap-2">
-          <Button onClick={goBack} type="button">
+          <Button
+            onClick={() => {
+              setInformation(getValues());
+              setPage(EXPERIENCE_PAGE);
+            }}
+            type="button"
+          >
             <span>Back</span>
           </Button>
           <Button type="submit" disabled={!isValid}>
@@ -110,4 +106,4 @@ export function Page() {
   );
 }
 
-export const pageId = "language";
+export const pageId = "education";

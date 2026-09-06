@@ -3,49 +3,91 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import TextArea from "@/components/text-area";
-import { DEFAULT_INFORMATIONS, generateHTML } from "@/data/information";
+import { DEFAULT_INFORMATIONS } from "@/data/information";
+import { EDUCATION_PAGE, LANGUAGE_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { informationStore } from "@/store";
-import { ExperienceT } from "@/types/form";
+import { informationStore, pageStore } from "@/store";
+import type { ExperienceT as ExperienceInformationT } from "@/types/information";
 import { Trash } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const experienceSchema = z.object({
+  experience: z
+    .array(
+      z.object({
+        title: z.string().trim().min(1, "Enter a job title."),
+        company: z.string().trim().min(1, "Enter a company name."),
+        start: z.string().min(1, "Select a start date."),
+        end: z.string(),
+        description: z.string().trim().min(1, "Describe your work."),
+        technologies: z
+          .string()
+          .trim()
+          .min(1, "Enter at least one technology."),
+      }),
+    )
+    .min(1, "Add at least one experience."),
+});
+
+type ExperienceFormValues = z.infer<typeof experienceSchema>;
 
 export function Page() {
-  const hasRun = useRef(false);
-  const { setInformation, experience, ...rest } = informationStore();
+  const { setInformation, experience } = informationStore();
+  const { setPage } = pageStore();
   const {
+    control,
+    getValues,
     handleSubmit,
     register,
-    control,
-    formState: { isValid },
-  } = useForm<ExperienceT>();
+    formState: { errors, isValid },
+  } = useForm<ExperienceFormValues>({
+    defaultValues: {
+      experience: experience.map((item: ExperienceInformationT) => ({
+        ...item,
+        technologies: item.technologies.join(", "),
+      })),
+    },
+    mode: "onChange",
+    resolver: zodResolver(experienceSchema),
+  });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experience",
   });
 
-  useEffect(() => {
-    if (!hasRun.current) {
-      append(experience);
-      hasRun.current = true;
-    }
-  }, []);
+  function onSubmit(informations: ExperienceFormValues) {
+    const formattedInformation = {
+      experience: informations.experience.map(({ technologies, ...item }) => ({
+        ...item,
+        technologies: technologies
+          .split(",")
+          .map((technology) => technology.trim())
+          .filter(Boolean),
+      })),
+    };
 
-  async function onSubmit(informations: ExperienceT) {
-    setInformation(informations);
+    setInformation(formattedInformation);
+    setPage(EDUCATION_PAGE);
+  }
 
-    const HTML = await generateHTML({ ...informations, ...rest });
-    const url = window.URL.createObjectURL(HTML);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.setAttribute("download", "index.html");
-    a.click();
+  function goBack() {
+    setInformation({
+      experience: getValues().experience.map(({ technologies, ...item }) => ({
+        ...item,
+        technologies: technologies
+          .split(",")
+          .map((technology) => technology.trim())
+          .filter(Boolean),
+      })),
+    });
+    setPage(LANGUAGE_PAGE);
   }
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit(onSubmit)}
       className="flex w-[26rem] flex-col items-center gap-8 py-8"
     >
@@ -56,6 +98,7 @@ export function Page() {
         >
           <div className="flex w-full justify-end">
             <Trash
+              aria-label="Remove experience"
               className={cn(
                 "h-4 w-4 cursor-pointer text-red-500 hover:text-red-500/70",
                 {
@@ -66,44 +109,60 @@ export function Page() {
             />
           </div>
           <Input
-            placeholder="Which role did you do there?"
+            error={errors.experience?.[index]?.title?.message}
             label="Experience"
+            placeholder="Which role did you do there?"
             {...register(`experience.${index}.title`)}
           />
           <Input
-            placeholder="Type company name"
+            error={errors.experience?.[index]?.company?.message}
             label="Company name"
+            placeholder="Type company name"
             {...register(`experience.${index}.company`)}
           />
           <Input
-            placeholder="When did you start?"
+            error={errors.experience?.[index]?.start?.message}
             label="Start date"
             type="month"
             {...register(`experience.${index}.start`)}
           />
           <Input
-            placeholder="When did it have end?"
-            label="End date"
+            error={errors.experience?.[index]?.end?.message}
+            label="End date (optional)"
             type="month"
             {...register(`experience.${index}.end`)}
           />
           <TextArea
-            className="mt-4"
+            error={errors.experience?.[index]?.description?.message}
+            label="Description"
             placeholder="Describe your activity there"
             {...register(`experience.${index}.description`)}
+          />
+          <Input
+            error={errors.experience?.[index]?.technologies?.message}
+            label="Technologies"
+            placeholder="React, TypeScript, Node.js"
+            {...register(`experience.${index}.technologies`)}
           />
         </div>
       ))}
       <div className="flex flex-col gap-2">
         <Button
-          onClick={() => append(DEFAULT_INFORMATIONS.experience[0])}
+          onClick={() =>
+            append({ ...DEFAULT_INFORMATIONS.experience[0], technologies: "" })
+          }
           type="button"
         >
           <span>Add experience</span>
         </Button>
-        <Button type="submit" disabled={!isValid}>
-          <span>Generate</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={goBack} type="button">
+            <span>Back</span>
+          </Button>
+          <Button type="submit" disabled={!isValid}>
+            <span>Next</span>
+          </Button>
+        </div>
       </div>
     </form>
   );

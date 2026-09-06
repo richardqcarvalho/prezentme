@@ -168,15 +168,17 @@ export const HTML = `
         <div class="links">
           <a
             class="link"
-            href="{gitHub}"
+            href="{gitHubHref}"
             target="_blank"
+            rel="noopener noreferrer"
           >
             GitHub
           </a>
           <a
             class="link"
-            href="{linkedIn}"
+            href="{linkedInHref}"
             target="_blank"
+            rel="noopener noreferrer"
           >
             LinkedIn
           </a>
@@ -199,7 +201,7 @@ export const HTML = `
             <div>
               <a
                 class="info-description"
-                href="mailto:{email}"
+                href="{emailHref}"
               >
                 {email}
               </a>
@@ -210,8 +212,9 @@ export const HTML = `
             <div>
               <a
                 class="info-description"
-                href="https://wa.me/{number}"
+                href="{numberHref}"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 {number}
               </a>
@@ -228,6 +231,7 @@ export const HTML = `
         <a
           href="https://prezentme.vercel.app"
           target="_blank"
+          rel="noopener noreferrer"
         >
           PrezentMe
         </a>
@@ -235,6 +239,7 @@ export const HTML = `
         <a
           href="https://github.com/richardqcarvalho/prezentme"
           target="_blank"
+          rel="noopener noreferrer"
         >
           Richard Carvalho
         </a>

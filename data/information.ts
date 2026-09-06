@@ -1,5 +1,4 @@
 import { HTML } from "@/data/template";
-import { MILLISECONDS_TO_MONTH, MILLISECONDS_TO_YEAR } from "@/lib/constants";
 import {
   EducationT,
   ExperienceT,
@@ -8,6 +7,84 @@ import {
   ProjectT,
   SetupT,
 } from "@/types/information";
+
+const escapeHTML = (value: string) =>
+  value.replace(/[&<>'"]/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;",
+    };
+
+    return entities[character];
+  });
+
+const hasText = (value: string) => value.trim().length > 0;
+
+const getSafeURL = (value: string) => {
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? escapeHTML(url.href)
+      : "#";
+  } catch {
+    return "#";
+  }
+};
+
+const getEmailHref = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    ? `mailto:${encodeURIComponent(email.trim())}`
+    : "#";
+
+const normalizeWhatsAppNumber = (number: string) => {
+  const digits = number.replace(/\D/g, "");
+  return digits.startsWith("00") ? digits.slice(2) : digits;
+};
+
+type Month = { year: number; month: number };
+
+const getMonth = (value: string): Month | null => {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(value.trim());
+  if (!match) return null;
+
+  return { year: Number(match[1]), month: Number(match[2]) };
+};
+
+const getDurationMonths = (start: Month, end: Month) =>
+  (end.year - start.year) * 12 + end.month - start.month;
+
+const formatDuration = (months: number) => {
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  const duration = [];
+
+  if (years > 0) duration.push(`${years}y`);
+  if (remainingMonths > 0) duration.push(`${remainingMonths}m`);
+
+  return duration.join(", ");
+};
+
+const getCurrentMonth = (): Month => {
+  const now = new Date();
+  return { year: now.getFullYear(), month: now.getMonth() + 1 };
+};
+
+const getDateRange = (start: string, end: string) => {
+  const startMonth = getMonth(start);
+  const endMonth = hasText(end) ? getMonth(end) : getCurrentMonth();
+  if (!startMonth || !endMonth) return null;
+
+  const durationMonths = getDurationMonths(startMonth, endMonth);
+  if (durationMonths < 0) return null;
+
+  return {
+    durationMonths,
+    label: `${startMonth.month}/${startMonth.year} to ${hasText(end) ? `${endMonth.month}/${endMonth.year}` : "Present"}`,
+  };
+};
 
 export const DEFAULT_INFORMATIONS: InformationsT = {
   firstName: "",
@@ -58,110 +135,187 @@ export const DEFAULT_INFORMATIONS: InformationsT = {
   ],
 };
 
-export async function generateHTML(informations: InformationsT) {
-  const filledHTML = HTML.replaceAll("{firstName}", informations.firstName)
-    .replaceAll("{lastName}", informations.lastName)
-    .replaceAll("{role}", informations.role)
-    .replaceAll("{gitHub}", informations.gitHub)
-    .replaceAll("{linkedIn}", informations.linkedIn)
-    .replaceAll("{number}", informations.number)
-    .replaceAll("{location}", informations.location)
-    .replaceAll("{email}", informations.email)
-    .replaceAll("{language}", getLanguage(informations.language))
-    .replaceAll("{experience}", getExperience(informations.experience))
-    .replaceAll("{education}", getEducation(informations.education))
-    .replaceAll("{project}", getProject(informations.project))
-    .replaceAll("{setup}", getSetup(informations.setup));
+export function generateHTML(informations: InformationsT) {
+  const number = normalizeWhatsAppNumber(informations.number);
+  const replacements: Record<string, string> = {
+    firstName: escapeHTML(informations.firstName),
+    lastName: escapeHTML(informations.lastName),
+    role: escapeHTML(informations.role),
+    gitHubHref: getSafeURL(informations.gitHub),
+    linkedInHref: getSafeURL(informations.linkedIn),
+    number: escapeHTML(number),
+    numberHref: number ? `https://wa.me/${number}` : "#",
+    location: escapeHTML(informations.location),
+    email: escapeHTML(informations.email),
+    emailHref: getEmailHref(informations.email),
+    language: getLanguage(informations.language),
+    experience: getExperience(informations.experience),
+    education: getEducation(informations.education),
+    project: getProject(informations.project),
+    setup: getSetup(informations.setup),
+  };
 
-  return new Blob([filledHTML]);
+  const filledHTML = Object.entries(replacements).reduce(
+    (html, [key, value]) => html.replaceAll(`{${key}}`, value),
+    HTML,
+  );
+
+  return new Blob([filledHTML], { type: "text/html;charset=utf-8" });
 }
 
 export function getLanguage(languages: LanguageT[]) {
+  const entries = languages.filter(
+    (language) => hasText(language.name) && hasText(language.level),
+  );
+  if (entries.length === 0) return "";
+
   return `
     <div class="subsection">
       <span class="subsection-title">Language</span>
       <div class="infos">
-        ${languages.reduce((HTML, currentLanguage) => {
-          return HTML.concat(`
-            <div class="info">
-              <span class="info-title">${currentLanguage.name}</span>
-              <span class="info-description">${currentLanguage.level}</span>
-            </div>
-          `);
-        }, "")}
+        ${entries
+          .map(
+            (language) => `
+              <div class="info">
+                <span class="info-title">${escapeHTML(language.name)}</span>
+                <span class="info-description">${escapeHTML(language.level)}</span>
+              </div>
+            `,
+          )
+          .join("")}
       </div>
     </div>
   `;
 }
 
 export function getExperience(experiences: ExperienceT[]) {
-  let totalExperience = 0;
-  let HTML = "";
+  const entries = experiences.flatMap((experience) => {
+    const dateRange = getDateRange(experience.start, experience.end);
+    if (
+      !dateRange ||
+      !hasText(experience.title) ||
+      !hasText(experience.company) ||
+      !hasText(experience.description)
+    ) {
+      return [];
+    }
 
-  for (const experience of experiences) {
-    const startDate = new Date(`${experience.start}-01T00:00:00`);
-    const endDate = new Date(`${experience.end}-01T00:00:00`);
-    const [startYear, startMonth] = experience.start.split("-");
-    const [endYear, endMonth] = experience.end.split("-");
-    const difference = endDate.getTime() - startDate.getTime();
-    totalExperience += difference;
-    const years = Math.floor(difference / MILLISECONDS_TO_YEAR);
-    const months = Math.floor(
-      (difference % MILLISECONDS_TO_YEAR) / MILLISECONDS_TO_MONTH,
-    );
-    const tuple = [];
-    if (years > 0) tuple.push(`${years}y`);
-    if (months > 0) tuple.push(`${months}m`);
+    const technologies = experience.technologies.filter(hasText);
+    return [{ experience, dateRange, technologies }];
+  });
+  if (entries.length === 0) return "";
 
-    HTML += `
-      <div class="info">
-        <span class="info-title">${experience.title}</span>
-        <span class="info-subtitle">${experience.company}</span>
-        <span class="info-subtitle">${startMonth}/${startYear} to ${endMonth}/${endYear} (${tuple.join(", ")})</span>
-        <span class="info-description">${experience.description}</span>
-        ${
-          experience.technologies.length > 0
-            ? `<div class="technologies">
-                ${experience.technologies.reduce(
-                  (HTML, technology) =>
-                    HTML.concat(
-                      `<span class="technology">${technology}</span>`,
-                    ),
-                  "",
-                )}
-              </div>`
-            : ""
-        }
-      </div>
-    `;
-  }
-
-  const years = Math.floor(totalExperience / MILLISECONDS_TO_YEAR);
-  const months = Math.floor(
-    (totalExperience % MILLISECONDS_TO_YEAR) / MILLISECONDS_TO_MONTH,
+  const totalDuration = formatDuration(
+    entries.reduce((total, entry) => total + entry.dateRange.durationMonths, 0),
   );
-  const tuple = [];
-  if (years > 0) tuple.push(`${years}y`);
-  if (months > 0) tuple.push(`${months}m`);
 
   return `
     <div class="subsection">
-      <span class="subsection-title">Experience (${tuple.join(", ")})</span>
+      <span class="subsection-title">Experience${totalDuration ? ` (${totalDuration})` : ""}</span>
       <div class="infos">
-        ${HTML}
+        ${entries
+          .map(
+            ({ experience, dateRange, technologies }) => `
+              <div class="info">
+                <span class="info-title">${escapeHTML(experience.title)}</span>
+                <span class="info-subtitle">${escapeHTML(experience.company)}</span>
+                <span class="info-subtitle">${dateRange.label}${dateRange.durationMonths ? ` (${formatDuration(dateRange.durationMonths)})` : ""}</span>
+                <span class="info-description">${escapeHTML(experience.description)}</span>
+                ${
+                  technologies.length > 0
+                    ? `<div class="technologies">${technologies.map((technology) => `<span class="technology">${escapeHTML(technology)}</span>`).join("")}</div>`
+                    : ""
+                }
+              </div>
+            `,
+          )
+          .join("")}
       </div>
     </div>
   `;
 }
 
 export function getEducation(educations: EducationT[]) {
-  return "";
+  const entries = educations.flatMap((education) => {
+    const dateRange = getDateRange(education.start, education.end);
+    return dateRange &&
+      hasText(education.title) &&
+      hasText(education.university)
+      ? [{ education, dateRange }]
+      : [];
+  });
+  if (entries.length === 0) return "";
+
+  return `
+    <div class="subsection">
+      <span class="subsection-title">Education</span>
+      <div class="infos">
+        ${entries
+          .map(
+            ({ education, dateRange }) => `
+              <div class="info">
+                <span class="info-title">${escapeHTML(education.title)}</span>
+                <span class="info-subtitle">${escapeHTML(education.university)}</span>
+                <span class="info-subtitle">${dateRange.label}${dateRange.durationMonths ? ` (${formatDuration(dateRange.durationMonths)})` : ""}</span>
+              </div>
+            `,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 export function getProject(projects: ProjectT[]) {
-  return "";
+  const entries = projects.filter(
+    (project) => hasText(project.title) && hasText(project.description),
+  );
+  if (entries.length === 0) return "";
+
+  return `
+    <div class="subsection">
+      <span class="subsection-title">Projects</span>
+      <div class="infos">
+        ${entries
+          .map((project) => {
+            const technologies = project.technologies.filter(hasText);
+            const title = escapeHTML(project.title);
+            const safeURL = getSafeURL(project.url);
+            return `
+              <div class="info">
+                ${hasText(project.url) && safeURL !== "#" ? `<a class="info-title" href="${safeURL}" target="_blank" rel="noopener noreferrer">${title}</a>` : `<span class="info-title">${title}</span>`}
+                <span class="info-description">${escapeHTML(project.description)}</span>
+                ${technologies.length > 0 ? `<div class="technologies">${technologies.map((technology) => `<span class="technology">${escapeHTML(technology)}</span>`).join("")}</div>` : ""}
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 export function getSetup(setups: SetupT[]) {
-  return "";
+  const entries = setups.filter(
+    (setup) => hasText(setup.name) && hasText(setup.specs),
+  );
+  if (entries.length === 0) return "";
+
+  return `
+    <div class="subsection">
+      <span class="subsection-title">Setup</span>
+      <div class="infos">
+        ${entries
+          .map(
+            (setup) => `
+              <div class="info">
+                <span class="info-title">${escapeHTML(setup.name)}</span>
+                <span class="info-description">${escapeHTML(setup.specs)}</span>
+              </div>
+            `,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
 }
