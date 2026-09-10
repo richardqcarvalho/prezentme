@@ -76,7 +76,7 @@ export function Page() {
           type="url"
           {...register("linkedIn")}
         />
-        <div className="flex gap-2">
+        <div className="flex items-end gap-2">
           <CountryPicker
             value={watch("dial")}
             onChange={(dial) =>
