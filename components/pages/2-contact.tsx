@@ -76,22 +76,25 @@ export function Page() {
           type="url"
           {...register("linkedIn")}
         />
-        <div className="flex items-end gap-2">
-          <CountryPicker
-            value={watch("dial")}
-            onChange={(dial) =>
-              setValue("dial", dial, { shouldValidate: true })
-            }
-          />
-          <Input
-            label="Number"
-            error={errors.number?.message}
-            placeholder="Tell us your contact number"
-            type="tel"
-            inputMode="numeric"
-            className="flex-1"
-            {...register("number")}
-          />
+        <div className="flex w-full flex-col gap-2">
+          <label htmlFor="number">Number</label>
+          <div className="flex items-end gap-2">
+            <CountryPicker
+              value={watch("dial")}
+              onChange={(dial) =>
+                setValue("dial", dial, { shouldValidate: true })
+              }
+            />
+            <Input
+              error={errors.number?.message}
+              placeholder="Tell us your contact number"
+              type="tel"
+              inputMode="numeric"
+              id="number"
+              className="flex-1"
+              {...register("number")}
+            />
+          </div>
         </div>
         <Input
           error={errors.email?.message}

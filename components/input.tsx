@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { InputHTMLAttributes, useId } from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
+  label?: string;
   error?: string;
 };
 
@@ -24,7 +24,7 @@ export default function Input({
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <label htmlFor={inputId}>{label}</label>
+      {label && <label htmlFor={inputId}>{label}</label>}
       <input
         {...props}
         aria-describedby={describedBy || undefined}
