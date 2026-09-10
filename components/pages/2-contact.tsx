@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { LANGUAGE_PAGE, PERSONAL_INFORMATIONS_PAGE } from "@/lib/constants";
+import { COUNTRIES, splitNumber } from "@/lib/country-codes";
 import { informationStore, pageStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -11,7 +12,11 @@ import { z } from "zod";
 const contactSchema = z.object({
   gitHub: z.url("Enter a valid GitHub URL."),
   linkedIn: z.url("Enter a valid LinkedIn URL."),
-  number: z.string().trim().min(1, "Enter a contact number."),
+  dial: z.string().min(1),
+  number: z
+    .string()
+    .trim()
+    .regex(/^\d{4,14}$/, "Enter a valid contact number."),
   email: z.email("Enter a valid email address."),
 });
 
@@ -27,13 +32,18 @@ export function Page() {
     register,
     formState: { errors, isValid },
   } = useForm<ContactFormValues>({
-    defaultValues: { gitHub, linkedIn, number, email },
+    defaultValues: {
+      gitHub,
+      linkedIn,
+      ...splitNumber(number),
+      email,
+    },
     mode: "onChange",
     resolver: zodResolver(contactSchema),
   });
 
-  function onSubmit(informations: ContactFormValues) {
-    setInformation(informations);
+  function onSubmit({ dial, number, ...informations }: ContactFormValues) {
+    setInformation({ ...informations, number: `${dial}${number}` });
     setPage(LANGUAGE_PAGE);
   }
 
@@ -63,13 +73,31 @@ export function Page() {
           type="url"
           {...register("linkedIn")}
         />
-        <Input
-          error={errors.number?.message}
-          label="Number"
-          placeholder="Tell us your contact number"
-          type="tel"
-          {...register("number")}
-        />
+        <div className="flex gap-2">
+          <select
+            aria-label="Country code"
+            className="rounded-lg border border-black/20 px-2 py-2"
+            {...register("dial")}
+          >
+            {COUNTRIES.map((country) => (
+              <option
+                key={`${country.name}-${country.dial}`}
+                value={country.dial}
+              >
+                {country.flag} {country.dial}
+              </option>
+            ))}
+          </select>
+          <Input
+            label="Number"
+            error={errors.number?.message}
+            placeholder="Tell us your contact number"
+            type="tel"
+            inputMode="numeric"
+            className="flex-1"
+            {...register("number")}
+          />
+        </div>
         <Input
           error={errors.email?.message}
           label="Email"
