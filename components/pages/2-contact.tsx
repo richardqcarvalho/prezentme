@@ -1,9 +1,10 @@
 "use client";
 
 import Button from "@/components/button";
+import CountryPicker from "@/components/country-picker";
 import Input from "@/components/input";
 import { LANGUAGE_PAGE, PERSONAL_INFORMATIONS_PAGE } from "@/lib/constants";
-import { COUNTRIES, splitNumber } from "@/lib/country-codes";
+import { splitNumber } from "@/lib/country-codes";
 import { informationStore, pageStore } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -30,6 +31,8 @@ export function Page() {
     getValues,
     handleSubmit,
     register,
+    setValue,
+    watch,
     formState: { errors, isValid },
   } = useForm<ContactFormValues>({
     defaultValues: {
@@ -74,20 +77,12 @@ export function Page() {
           {...register("linkedIn")}
         />
         <div className="flex gap-2">
-          <select
-            aria-label="Country code"
-            className="rounded-lg border border-black/20 px-2 py-2"
-            {...register("dial")}
-          >
-            {COUNTRIES.map((country) => (
-              <option
-                key={`${country.name}-${country.dial}`}
-                value={country.dial}
-              >
-                {country.flag} {country.dial}
-              </option>
-            ))}
-          </select>
+          <CountryPicker
+            value={watch("dial")}
+            onChange={(dial) =>
+              setValue("dial", dial, { shouldValidate: true })
+            }
+          />
           <Input
             label="Number"
             error={errors.number?.message}
