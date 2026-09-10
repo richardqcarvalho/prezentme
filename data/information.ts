@@ -189,20 +189,26 @@ export function getLanguage(languages: LanguageT[]) {
 }
 
 export function getExperience(experiences: ExperienceT[]) {
-  const entries = experiences.flatMap((experience) => {
-    const dateRange = getDateRange(experience.start, experience.end);
-    if (
-      !dateRange ||
-      !hasText(experience.title) ||
-      !hasText(experience.company) ||
-      !hasText(experience.description)
-    ) {
-      return [];
-    }
+  const entries = experiences
+    .flatMap((experience) => {
+      const dateRange = getDateRange(experience.start, experience.end);
+      if (
+        !dateRange ||
+        !hasText(experience.title) ||
+        !hasText(experience.company) ||
+        !hasText(experience.description)
+      ) {
+        return [];
+      }
 
-    const technologies = experience.technologies.filter(hasText);
-    return [{ experience, dateRange, technologies }];
-  });
+      const technologies = experience.technologies.filter(hasText);
+      return [{ experience, dateRange, technologies }];
+    })
+    .sort((a, b) => {
+      const aStart = getMonth(a.experience.start) ?? { year: 0, month: 0 };
+      const bStart = getMonth(b.experience.start) ?? { year: 0, month: 0 };
+      return bStart.year - aStart.year || bStart.month - aStart.month;
+    });
   if (entries.length === 0) return "";
 
   const totalDuration = formatDuration(
