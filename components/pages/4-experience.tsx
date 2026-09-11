@@ -17,18 +17,18 @@ const experienceSchema = z.object({
   experience: z
     .array(
       z.object({
-        title: z.string().trim().min(1, "Enter a job title."),
-        company: z.string().trim().min(1, "Enter a company name."),
-        start: z.string().min(1, "Select a start date."),
+        title: z.string().trim().min(1, "Enter a job title"),
+        company: z.string().trim().min(1, "Enter a company name"),
+        start: z.string().min(1, "Select a start date"),
         end: z.string(),
-        description: z.string().trim().min(1, "Describe your work."),
+        description: z.string().trim().min(1, "Describe your work"),
         technologies: z
           .string()
           .trim()
-          .min(1, "Enter at least one technology."),
+          .min(1, "Enter at least one technology"),
       }),
     )
-    .min(1, "Add at least one experience."),
+    .min(1, "Add at least one experience"),
 });
 
 type ExperienceFormValues = z.infer<typeof experienceSchema>;

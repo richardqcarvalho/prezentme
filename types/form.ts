@@ -66,11 +66,11 @@ export const setupSchema = z.object({
   setup: z
     .array(
       z.object({
-        name: z.string().trim().min(1, "Enter an item name."),
-        specs: z.string().trim().min(1, "Describe the item."),
+        name: z.string().trim().min(1, "Enter an item name"),
+        specs: z.string().trim().min(1, "Describe the item"),
       }),
     )
-    .min(1, "Add at least one setup item."),
+    .min(1, "Add at least one setup item"),
 });
 
 export type PersonalInfoT = z.infer<typeof personalInfoSchema>;

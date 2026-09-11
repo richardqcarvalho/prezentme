@@ -15,11 +15,11 @@ const languageSchema = z.object({
   language: z
     .array(
       z.object({
-        name: z.string().trim().min(1, "Enter a language."),
-        level: z.string().trim().min(1, "Enter a proficiency level."),
+        name: z.string().trim().min(1, "Enter a language"),
+        level: z.string().trim().min(1, "Enter a proficiency level"),
       }),
     )
-    .min(1, "Add at least one language."),
+    .min(1, "Add at least one language"),
 });
 
 type LanguageFormValues = z.infer<typeof languageSchema>;
