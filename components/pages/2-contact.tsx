@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import CountryPicker from "@/components/country-picker";
 import Input from "@/components/input";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { LANGUAGE_PAGE, PERSONAL_INFORMATIONS_PAGE } from "@/lib/constants";
 import { splitNumber } from "@/lib/country-codes";
 import { informationStore, pageStore } from "@/store";
@@ -11,14 +12,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const contactSchema = z.object({
-  gitHub: z.url("Enter a valid GitHub URL."),
-  linkedIn: z.url("Enter a valid LinkedIn URL."),
+  gitHub: z.url("Enter a valid GitHub URL"),
+  linkedIn: z.url("Enter a valid LinkedIn URL"),
   dial: z.string().min(1),
   number: z
     .string()
     .trim()
-    .regex(/^\d{4,14}$/, "Enter a valid contact number."),
-  email: z.email("Enter a valid email address."),
+    .regex(/^\d{4,14}$/, "Enter a valid contact number"),
+  email: z.email("Enter a valid email address"),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -45,13 +46,19 @@ export function Page() {
     resolver: zodResolver(contactSchema),
   });
 
-  function onSubmit({ dial, number, ...informations }: ContactFormValues) {
-    setInformation({ ...informations, number: `${dial}${number}` });
+  function toInformations({ dial, number, ...informations }: ContactFormValues) {
+    return { ...informations, number: `${dial}${number}` };
+  }
+
+  useAutoPersist(watch, toInformations);
+
+  function onSubmit(informations: ContactFormValues) {
+    setInformation(toInformations(informations));
     setPage(LANGUAGE_PAGE);
   }
 
   function goBack() {
-    setInformation(getValues());
+    setInformation(toInformations(getValues()));
     setPage(PERSONAL_INFORMATIONS_PAGE);
   }
 
@@ -78,23 +85,31 @@ export function Page() {
         />
         <div className="flex w-full flex-col gap-2">
           <label htmlFor="number">Number</label>
-          <div className="flex items-end gap-2">
+          <div className="flex gap-2">
             <CountryPicker
               value={watch("dial")}
               onChange={(dial) =>
                 setValue("dial", dial, { shouldValidate: true })
               }
             />
-            <Input
-              error={errors.number?.message}
-              placeholder="Tell us your contact number"
+            <input
               type="tel"
               inputMode="numeric"
               id="number"
-              className="flex-1"
+              placeholder="Tell us your contact number"
+              aria-invalid={Boolean(errors.number)}
+              aria-describedby={
+                errors.number ? "number-error" : undefined
+              }
+              className="flex-1 rounded-lg border px-4 py-2"
               {...register("number")}
             />
           </div>
+          {errors.number && (
+            <p className="text-sm text-red-600" id="number-error" role="alert">
+              {errors.number.message}
+            </p>
+          )}
         </div>
         <Input
           error={errors.email?.message}

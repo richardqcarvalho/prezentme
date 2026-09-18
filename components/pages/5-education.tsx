@@ -2,6 +2,7 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { EXPERIENCE_PAGE, PROJECT_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function Page() {
     handleSubmit,
     register,
     control,
+    watch,
     getValues,
     formState: { isValid },
   } = useForm<EducationT>({
@@ -25,6 +27,8 @@ export function Page() {
     defaultValues: { education },
     mode: "onChange",
   });
+
+  useAutoPersist(watch, (values) => values);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "education",

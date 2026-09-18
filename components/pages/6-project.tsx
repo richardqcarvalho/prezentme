@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import TextArea from "@/components/text-area";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { EDUCATION_PAGE, SETUP_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ export function Page() {
     register,
     control,
     setValue,
+    watch,
     getValues,
     formState: { errors, isValid },
   } = useForm<ProjectT>({
@@ -27,6 +29,8 @@ export function Page() {
     defaultValues: { project },
     mode: "onChange",
   });
+
+  useAutoPersist(watch, (values) => values);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "project",

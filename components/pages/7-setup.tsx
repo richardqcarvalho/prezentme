@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import TextArea from "@/components/text-area";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { PROJECT_PAGE, REVIEW_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,15 @@ export function Page() {
     getValues,
     handleSubmit,
     register,
+    watch,
     formState: { errors, isValid },
   } = useForm<SetupT>({
     defaultValues: { setup },
     mode: "onChange",
     resolver: zodResolver(setupSchema),
   });
+
+  useAutoPersist(watch, (values) => values);
   const { fields, append, remove } = useFieldArray({ control, name: "setup" });
 
   function onSubmit(informations: SetupT) {

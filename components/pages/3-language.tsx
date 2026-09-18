@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { RepeatableFieldGroup } from "@/components/repeatable-field-group";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { CONTACT_PAGE, EXPERIENCE_PAGE } from "@/lib/constants";
 import { informationStore, pageStore } from "@/store";
@@ -14,11 +15,11 @@ const languageSchema = z.object({
   language: z
     .array(
       z.object({
-        name: z.string().trim().min(1, "Enter a language."),
-        level: z.string().trim().min(1, "Enter a proficiency level."),
+        name: z.string().trim().min(1, "Enter a language"),
+        level: z.string().trim().min(1, "Enter a proficiency level"),
       }),
     )
-    .min(1, "Add at least one language."),
+    .min(1, "Add at least one language"),
 });
 
 type LanguageFormValues = z.infer<typeof languageSchema>;
@@ -31,12 +32,15 @@ export function Page() {
     getValues,
     handleSubmit,
     register,
+    watch,
     formState: { errors, isValid },
   } = useForm<LanguageFormValues>({
     defaultValues: { language },
     mode: "onChange",
     resolver: zodResolver(languageSchema),
   });
+
+  useAutoPersist(watch, (values) => values);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "language",
