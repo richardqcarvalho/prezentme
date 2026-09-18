@@ -2,6 +2,7 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { CONTACT_PAGE } from "@/lib/constants";
 import { informationStore, pageStore } from "@/store";
 import { personalInfoSchema, PersonalInfoT } from "@/types/form";
@@ -15,12 +16,15 @@ export function Page() {
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors, isValid },
   } = useForm<PersonalInfoT>({
     defaultValues: { firstName, lastName, role, location },
     mode: "onChange",
     resolver: zodResolver(personalInfoSchema),
   });
+
+  useAutoPersist(watch, (values) => values);
 
   function onSubmit(informations: PersonalInfoT) {
     setInformation(informations);

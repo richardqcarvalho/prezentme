@@ -2,6 +2,7 @@
 
 import Button from "@/components/button";
 import Input from "@/components/input";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { CONTACT_PAGE, EXPERIENCE_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -32,12 +33,15 @@ export function Page() {
     getValues,
     handleSubmit,
     register,
+    watch,
     formState: { errors, isValid },
   } = useForm<LanguageFormValues>({
     defaultValues: { language },
     mode: "onChange",
     resolver: zodResolver(languageSchema),
   });
+
+  useAutoPersist(watch, (values) => values);
   const { fields, append, remove } = useFieldArray({
     control,
     name: "language",

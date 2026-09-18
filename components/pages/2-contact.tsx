@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import CountryPicker from "@/components/country-picker";
 import Input from "@/components/input";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { LANGUAGE_PAGE, PERSONAL_INFORMATIONS_PAGE } from "@/lib/constants";
 import { splitNumber } from "@/lib/country-codes";
 import { informationStore, pageStore } from "@/store";
@@ -45,13 +46,19 @@ export function Page() {
     resolver: zodResolver(contactSchema),
   });
 
-  function onSubmit({ dial, number, ...informations }: ContactFormValues) {
-    setInformation({ ...informations, number: `${dial}${number}` });
+  function toInformations({ dial, number, ...informations }: ContactFormValues) {
+    return { ...informations, number: `${dial}${number}` };
+  }
+
+  useAutoPersist(watch, toInformations);
+
+  function onSubmit(informations: ContactFormValues) {
+    setInformation(toInformations(informations));
     setPage(LANGUAGE_PAGE);
   }
 
   function goBack() {
-    setInformation(getValues());
+    setInformation(toInformations(getValues()));
     setPage(PERSONAL_INFORMATIONS_PAGE);
   }
 

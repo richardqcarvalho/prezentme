@@ -3,6 +3,7 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
 import TextArea from "@/components/text-area";
+import { useAutoPersist } from "@/hooks/use-auto-persist";
 import { DEFAULT_INFORMATIONS } from "@/data/information";
 import { EDUCATION_PAGE, LANGUAGE_PAGE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,10 @@ const experienceSchema = z.object({
 
 type ExperienceFormValues = z.infer<typeof experienceSchema>;
 
+type ExperienceInformationsT = Omit<ExperienceInformationT, "technologies"> & {
+  technologies: string;
+};
+
 export function Page() {
   const { setInformation, experience } = informationStore();
   const { setPage } = pageStore();
@@ -41,6 +46,7 @@ export function Page() {
     getValues,
     handleSubmit,
     register,
+    watch,
     formState: { errors, isValid },
   } = useForm<ExperienceFormValues>({
     defaultValues: {
@@ -52,14 +58,17 @@ export function Page() {
     mode: "onChange",
     resolver: zodResolver(experienceSchema),
   });
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experience",
   });
 
-  function onSubmit(informations: ExperienceFormValues) {
-    const formattedInformation = {
-      experience: informations.experience.map(({ technologies, ...item }) => ({
+  function toInformations(values: {
+    experience: ExperienceInformationsT[];
+  }) {
+    return {
+      experience: values.experience.map(({ technologies, ...item }) => ({
         ...item,
         technologies: technologies
           .split(",")
@@ -67,21 +76,17 @@ export function Page() {
           .filter(Boolean),
       })),
     };
+  }
 
-    setInformation(formattedInformation);
+  useAutoPersist(watch, toInformations);
+
+  function onSubmit(informations: ExperienceFormValues) {
+    setInformation(toInformations(informations));
     setPage(EDUCATION_PAGE);
   }
 
   function goBack() {
-    setInformation({
-      experience: getValues().experience.map(({ technologies, ...item }) => ({
-        ...item,
-        technologies: technologies
-          .split(",")
-          .map((technology) => technology.trim())
-          .filter(Boolean),
-      })),
-    });
+    setInformation(toInformations(getValues()));
     setPage(LANGUAGE_PAGE);
   }
 
