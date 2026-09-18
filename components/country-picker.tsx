@@ -72,7 +72,7 @@ export default function CountryPicker({ value, onChange }: CountryPickerProps) {
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label="Country code"
-        className="flex items-center gap-1 rounded-lg border border-black/20 px-3 py-2"
+        className="flex items-center gap-1 rounded-lg border px-3 py-2"
         onClick={() => (open ? setOpen(false) : openList())}
       >
         <span>{selected.flag}</span>
