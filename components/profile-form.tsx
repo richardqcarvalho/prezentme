@@ -1,51 +1,66 @@
 "use client";
 
-import { useEffect } from "react";
-import { useActionState } from "react";
-import { toast } from "sonner";
-
-import { updateProfile, type UpdateProfileState } from "@/app/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { ProfileDraft } from "@/components/wizard/draft";
 
 type ProfileFormProps = {
-  firstName: string | null;
-  lastName: string | null;
-  location: string | null;
+  value: ProfileDraft;
+  onChange: (patch: Partial<ProfileDraft>) => void;
+  submitLabel?: string;
+  onNext?: () => void;
 };
 
-const initialState: UpdateProfileState = { success: false };
-
-export function ProfileForm({ firstName, lastName, location }: ProfileFormProps) {
-  const [state, formAction, pending] = useActionState(updateProfile, initialState);
-
-  useEffect(() => {
-    if (state.success) toast.success("Profile saved");
-    if (state.error) toast.error(state.error);
-  }, [state]);
-
+export function ProfileForm({ value, onChange, submitLabel = "Save", onNext }: ProfileFormProps) {
   return (
-    <form action={formAction} className="grid gap-6">
-      <div className="grid gap-3">
-        <Label htmlFor="firstName">First name</Label>
-        <Input id="firstName" name="firstName" defaultValue={firstName ?? ""} maxLength={100} />
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onNext?.();
+      }}
+      className="grid gap-6"
+    >
+      <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-2">
+          <Label htmlFor="firstName">First name</Label>
+          <Input
+            id="firstName"
+            value={value.firstName}
+            onChange={(e) => onChange({ firstName: e.target.value })}
+            maxLength={100}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="lastName">Last name</Label>
+          <Input
+            id="lastName"
+            value={value.lastName}
+            onChange={(e) => onChange({ lastName: e.target.value })}
+            maxLength={100}
+          />
+        </div>
       </div>
-      <div className="grid gap-3">
-        <Label htmlFor="lastName">Last name</Label>
-        <Input id="lastName" name="lastName" defaultValue={lastName ?? ""} maxLength={100} />
-      </div>
-      <div className="grid gap-3">
+      <div className="grid gap-2">
         <Label htmlFor="location">Location</Label>
         <Input
           id="location"
-          name="location"
-          defaultValue={location ?? ""}
+          value={value.location}
+          onChange={(e) => onChange({ location: e.target.value })}
           placeholder="e.g. Paris, France"
         />
       </div>
-      <Button type="submit" disabled={pending} className="w-full">
-        {pending ? "Saving..." : "Save"}
+      <div className="grid gap-2">
+        <Label htmlFor="role">Role</Label>
+        <Input
+          id="role"
+          value={value.role}
+          onChange={(e) => onChange({ role: e.target.value })}
+          placeholder="e.g. Frontend Engineer"
+        />
+      </div>
+      <Button type="submit" className="w-full">
+        {submitLabel}
       </Button>
     </form>
   );

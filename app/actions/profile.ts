@@ -13,10 +13,7 @@ export type UpdateProfileState = {
   error?: string;
 };
 
-export async function updateProfile(
-  _prev: UpdateProfileState,
-  formData: FormData,
-): Promise<UpdateProfileState> {
+export async function updateProfile(formData: FormData): Promise<UpdateProfileState> {
   const user = await getSessionUser();
   if (!user) {
     return { success: false, error: "Not authenticated" };
@@ -25,11 +22,12 @@ export async function updateProfile(
   const firstName = (formData.get("firstName") as string)?.trim() || null;
   const lastName = (formData.get("lastName") as string)?.trim() || null;
   const location = (formData.get("location") as string)?.trim() || null;
+  const role = (formData.get("role") as string)?.trim() || null;
 
   try {
     await db
       .update(users)
-      .set({ firstName, lastName, location, updatedAt: new Date() })
+      .set({ firstName, lastName, location, role, updatedAt: new Date() })
       .where(eq(users.id, user.id));
 
     revalidatePath("/");

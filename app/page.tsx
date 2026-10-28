@@ -1,18 +1,18 @@
 import { LogOutIcon } from "lucide-react";
 
 import { getSessionUser } from "@/lib/session";
+import {
+  getLatestSetup,
+  getUserById,
+  getUserEducation,
+  getUserExperiences,
+  getUserLanguages,
+} from "@/lib/users";
 import { signInWithGitHub, signOut } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { ProfileForm } from "@/components/profile-form";
+import { OnboardingWizard } from "@/components/onboarding-wizard";
 
 function GitHubIcon() {
   return (
@@ -23,9 +23,9 @@ function GitHubIcon() {
 }
 
 export default async function Home() {
-  const user = await getSessionUser();
+  const sessionUser = await getSessionUser();
 
-  if (!user) {
+  if (!sessionUser) {
     return (
       <main className="flex min-h-screen items-center justify-center">
         <Card className="w-full max-w-sm">
@@ -46,29 +46,48 @@ export default async function Home() {
     );
   }
 
+  const [user, languages, education, experiences, setup] = await Promise.all([
+    getUserById(sessionUser.id),
+    getUserLanguages(sessionUser.id),
+    getUserEducation(sessionUser.id),
+    getUserExperiences(sessionUser.id),
+    getLatestSetup(sessionUser.id),
+  ]);
+
+  if (!user) {
+    return null;
+  }
+
+  const latest = (rows: { updatedAt: Date }[]) =>
+    rows.reduce((max, row) => Math.max(max, row.updatedAt.getTime()), 0);
+
+  const serverTimestamps = {
+    profile: user.updatedAt.getTime(),
+    languages: latest(languages),
+    education: latest(education),
+    experiences: latest(experiences),
+    setup: setup?.updatedAt.getTime() ?? 0,
+  };
+
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">Your profile</CardTitle>
-          <CardDescription>Signed in as @{user.githubLogin}</CardDescription>
-          <CardAction>
-            <form action={signOut}>
-              <Button type="submit" variant="ghost" size="sm">
-                <LogOutIcon data-icon="inline-start" />
-                Sign out
-              </Button>
-            </form>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <ProfileForm
-            firstName={user.firstName}
-            lastName={user.lastName}
-            location={user.location}
-          />
-        </CardContent>
-      </Card>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
+      <div className="flex w-full max-w-2xl items-center justify-between">
+        <p className="text-sm text-muted-foreground">Signed in as @{user.githubLogin}</p>
+        <form action={signOut}>
+          <Button type="submit" variant="ghost" size="sm">
+            <LogOutIcon data-icon="inline-start" />
+            Sign out
+          </Button>
+        </form>
+      </div>
+      <OnboardingWizard
+        user={user}
+        languages={languages}
+        education={education}
+        experiences={experiences}
+        setup={setup}
+        serverTimestamps={serverTimestamps}
+      />
     </main>
   );
 }
